@@ -1,4 +1,3 @@
-import self as self
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ListProperty
@@ -17,72 +16,60 @@ KV = '''
 <ItemDrawer>:
     theme_text_color: "Custom"
     on_release: self.parent.set_color_item(self)
-
     IconLeftWidget:
         id: icon
         icon: root.icon
         theme_text_color: "Custom"
         text_color: root.text_color
-
-
 <ContentNavigationDrawer>:
     orientation: "vertical"
     padding: "8dp"
     spacing: "8dp"
-
     AnchorLayout:
         anchor_x: "left"
         size_hint_y: None
         height: avatar.height
-
         Image:
             id: avatar
             size_hint: None, None
             size: "56dp", "56dp"
             source: "data/logo/kivy-icon-256.png"
-
     MDLabel:
-        text: "KivyMD library"
+        text: "P2P Loans Constructor"
         font_style: "Button"
         size_hint_y: None
         height: self.texture_size[1]
-
     MDLabel:
-        text: "kivydevelopment@gmail.com"
+        text: "by Kalmykov Viktor, Biscuit Team"
         font_style: "Caption"
         size_hint_y: None
         height: self.texture_size[1]
-
     ScrollView:
-
         DrawerList:
             id: md_list
-
-
-
 Screen:
-
     MDNavigationLayout:
-
         ScreenManager:
-
             Screen:
-
                 BoxLayout:
                     orientation: 'vertical'
-
                     MDToolbar:
                         title: "P2P Loans Constructor"
                         elevation: 10
                         left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
-
+                        right_action_items: [["star-outline", lambda x: app.on_star_click()]]
+                        md_bg_color: 0, 0, 0, 1                    
                     MDTabs:
                         id: tabs
-
-
+                        on_tab_switch: app.on_tab_switch(*args)
+                        size_hint_y: None
+                        height: "48dp"
+                        tab_indicator_anim: False
+                        background_color: 0.1, 0.1, 0.1, 1 
+                    Widget:
+                    
         MDNavigationDrawer:
             id: nav_drawer
-
             ContentNavigationDrawer:
                 id: content_drawer
 '''
@@ -115,26 +102,48 @@ class DrawerList(ThemableBehavior, MDList):
 class P2PLoansConstructorApp(MDApp):
     def build(self):
         return Builder.load_string(KV)
-
     def on_start(self):
-        icons_item = {
-            "folder": "My files",
-            "account-multiple": "Shared with me",
-            "star": "Starred",
-            "history": "Recent",
-            "checkbox-marked": "Shared with me",
-            "upload": "Upload",
+        icons_item_menu_lines = {
+            "account-cog-outline": "My Account",
+            "hand-okay": "My Grade",
+            "head-lightbulb-outline": "Buscuit Bot",
+            "alpha": "Market Screener",
+            "beta": "About",
+            "search-web": "Biscuit.com",
         }
-        for icon_name in icons_item.keys():
+        icons_item_menu_tabs = {
+            "calculator-variant": "Input",
+            "table-large": "Table",
+            "chart-areaspline": "Payments",
+            "chart-pie": "Portfolio composition",
+            "book-open-variant": "Summary"
+        }
+        for icon_name in icons_item_menu_lines.keys():
             self.root.ids.content_drawer.ids.md_list.add_widget(
-                ItemDrawer(icon=icon_name, text=icons_item[icon_name])
+                ItemDrawer(icon=icon_name, text=icons_item_menu_lines[icon_name])
             )
 
-        for icon_name, name_tab in icons_item.items():
+        for icon_name, name_tab in icons_item_menu_tabs.items():
             self.root.ids.tabs.add_widget(
-                Tab(text=f"[ref={name_tab}][font={fonts[-1]['fn_regular']}]{md_icons[icon_name]}[/font][/ref] {name_tab}")
+                Tab(
+                    text=f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons[icon_name]}[/font][/ref] {name_tab}")
             )
 
+    def on_tab_switch(
+        self, instance_tabs, instance_tab, instance_tab_label, tab_text
+    ):
+        '''Called when switching tabs.
+
+        :type instance_tabs: <kivymd.uix.tab.MDTabs object>;
+        :param instance_tab: <__main__.Tab object>;
+        :param instance_tab_label: <kivymd.uix.tab.MDTabsLabel object>;
+        :param tab_text: text or name icon of tab;
+        '''
+
+        print("tab clicked! "+tab_text)
+
+    def on_star_click(self):
+        pass
 
 P2PLoansConstructorApp().run()
 
