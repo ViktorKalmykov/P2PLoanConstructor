@@ -18,6 +18,9 @@ from kivymd.font_definitions import fonts
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.clock import Clock
 
+from kivymd.uix.picker import MDDatePicker
+import datetime
+
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
 # this import will prevent disappear tabs through some clicks  
@@ -94,6 +97,11 @@ Screen:
                                         icon: "calendar-month"
                                       
                                     MDTextField:
+                                        id: start_date
+                                        hint_text: "Start date"
+                                        on_focus: if self.focus: app.date_dialog.open()
+                                    
+                                    MDTextField:
                                         hint_text: "Start date"
                                       
                                 BoxLayout:
@@ -103,6 +111,7 @@ Screen:
                                         icon: "cash"
                                       
                                     MDTextField:
+                                        id: loan
                                         hint_text: "Loan"
                                       
                                 BoxLayout:
@@ -112,6 +121,7 @@ Screen:
                                         icon: "clock-time-five-outline"
                                       
                                     MDTextField:
+                                        id: months
                                         hint_text: "Months"
                                       
                                 BoxLayout:
@@ -121,13 +131,52 @@ Screen:
                                         icon: "bank"   
                                       
                                     MDTextField:
-                                        hint_text: "Interest, %"
+                                        id: interest
+                                        hint_text: "Interest rate, %"
                                       
                                     MDTextField:
                                         id: payment_type
                                         hint_text: "Payment type"
                                         on_focus: if self.focus: app.menu.open()
-                           
+                                MDSeparator:
+                                    height: "1dp"
+                                    
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    
+                                    AnchorLayout:
+                                        anchor_x: 'center'
+                                        
+                                        MDRectangleFlatIconButton:
+                                            icon: "android"
+                                            text: "BUTTON1"
+                                            theme_text_color: "Custom"
+                                            text_color: 1, 1, 1, 1
+                                            line_color: 0, 0, 0, 1
+                                            icon_color: 1, 0, 0, 1
+                                            md_bg_color: 0.1, 0.1, 0.1, 1
+                                            adaptive_width: True
+                                            on_release: app.calc_table(*args)
+                                    
+                                    AnchorLayout:
+                                        anchor_x: 'center'
+                                        
+                                        MDRectangleFlatIconButton:
+                                            icon: "android"
+                                            text: "BUTTON2"
+                                            theme_text_color: "Custom"
+                                            text_color: 1, 1, 1, 1
+                                            line_color: 0, 0, 0, 1
+                                            icon_color: 1, 0, 0, 1
+                                            md_bg_color: 0.1, 0.1, 0.1, 1
+                                    
+                                    AnchorLayout:
+                                        anchor_x: 'center'
+                                        
+                                        Button:
+                                            text: "Test Ok"
+                                            size_hint_y: .5
+                                            background_color: (0.1, 0.1, 0.1, 1.0)
                         Tab:
                             id: tab2
                             name: 'tab2'
@@ -195,6 +244,11 @@ class P2PLoansConstructorApp(MDApp):
         )
         self.menu.bind(on_release=self.set_item)
 
+        self.date_dialog = MDDatePicker(
+            callback=self.get_date,
+            background_color=(0.1, 0.1, 0.1, 1.0),
+        )
+
     def set_item(self, instance_menu, instance_menu_item):
         def set_item(interval):
             self.screen.ids.payment_type.text = instance_menu_item.text
@@ -202,12 +256,25 @@ class P2PLoansConstructorApp(MDApp):
 
         Clock.schedule_once(set_item, 0.5)
 
+    def get_date(self, date):
+        '''
+        :type date: <class 'datetime.date'>
+        '''
+        print(date)
+        self.screen.ids.start_date.text = date.strftime("%d-%m-%Y") # str(date)
+
     def build(self):
         self.theme_cls.theme_style = "Light" # "Dark" # "Light"
         # return Builder.load_string(KV)
         return self.screen
 
     def on_start(self):
+        self.screen.ids.start_date.text = datetime.date.today().strftime("%d-%m-%Y")
+        self.screen.ids.loan.text = "1000"
+        self.screen.ids.months.text = "12"
+        self.screen.ids.interest.text = "12"
+        self.screen.ids.payment_type.text = "annuity"
+
         icons_item_menu_lines = {
             "account-cog-outline": "My Account",
             "hand-okay": "My Grade",
