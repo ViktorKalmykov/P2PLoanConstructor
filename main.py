@@ -1,6 +1,7 @@
 #pip install kivy
 #pip install kivymd
 #pip install https://github.com/kivymd/KivyMD/archive/3274d62.zip
+from calendar import calendar
 
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
@@ -20,6 +21,7 @@ from kivy.clock import Clock
 
 from kivymd.uix.picker import MDDatePicker
 import datetime
+import calendar
 
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
@@ -89,7 +91,7 @@ Screen:
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
-                              
+                                
                                 BoxLayout:
                                     orientation: 'horizontal'
                                   
@@ -181,7 +183,16 @@ Screen:
                             id: tab2
                             name: 'tab2'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] Portfolio composition"
-                    
+                            
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"   
+                                
+                                ScrollView:
+                                
+                                    MDList:
+                                        id: table_list
+                              
                         Tab:
                             id: tab3
                             name: 'tab3'
@@ -201,11 +212,61 @@ Screen:
             id: nav_drawer
             ContentNavigationDrawer:
                 id: content_drawer
+
+<ItemTable>:
+    size_hint_y: None
+    height: "42dp"
+    
+    canvas:
+        Color:
+            rgba: root.color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            
+    MDLabel:
+        text: root.num
+        halign: "center"
+    MDLabel:
+        text: root.date
+        halign: "center"
+    MDLabel:
+        text: root.payment
+        halign: "center"
+    MDLabel:
+        text: root.interest
+        halign: "center"
+    MDLabel:
+        text: root.principal
+        halign: "center"
+    MDLabel:
+        text: root.debt
+        halign: "center"
+        
 '''
 
 
 class Tab(MDFloatLayout, MDTabsBase):
     pass
+
+class ItemTable(BoxLayout):
+    num = StringProperty()
+    date = StringProperty()
+    payment = StringProperty()
+    interest = StringProperty()
+    principal = StringProperty()
+    debt = StringProperty()
+    color = ListProperty()
+
+def next_month_date(d):
+    _year = d.year + (d.month // 12)
+    _month = 1 if (d.month // 12) else d.month + 1
+    next_month_len = calendar.monthrange(_year, _month) [1]
+    next_month = d
+    if d.day > next_month_len:
+        next_month = next_month.replace(day=next_month_len)
+    next_month = next_month.replace(year=_year, month=_month)
+    return next_month
 
 class ContentNavigationDrawer(BoxLayout):
     pass
@@ -227,6 +288,9 @@ class DrawerList(ThemableBehavior, MDList):
                 break
         instance_item.text_color = self.theme_cls.primary_color
 
+class ItemColor(BoxLayout):
+    text = StringProperty()
+    color = ListProperty()
 
 class P2PLoansConstructorApp(MDApp):
     def __init__(self, **kwargs):
@@ -317,6 +381,72 @@ class P2PLoansConstructorApp(MDApp):
         print("tab clicked! "+tab_text)
 
     def on_star_click(self):
+        pass
+
+    def calc_table(self, *args):
+        print("button1 pressed")
+        start_date = self.screen.ids.loan.text
+        loan = self.screen.ids.loan.text
+        months = self.screen.ids.months.text
+        interest = self.screen.ids.interest.text
+        payment_type = self.screen.ids.payment_type.text
+        print(start_date+" "+loan+" "+months+" "+payment_type)
+        start_date = datetime.datetime.strptime(self.screen.ids.start_date.text,"%d-%m-%Y").date()
+        loan = float(loan)
+        months = int(months)
+        interest = float(interest)
+
+        percent = interest/100/12
+        monthly_payment = loan*(percent+percent/((1+percent)**months-1))
+
+        debt_end_month = loan
+        for i in range(0, months):
+            repayment_of_interest = debt_end_month*percent
+            repayment_of_loan_body = monthly_payment-repayment_of_interest
+            debt_end_month = debt_end_month-repayment_of_loan_body
+            print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+
+        total_amount_of_payments = monthly_payment * months
+        overpayment_loan = total_amount_of_payments-loan
+        effective_interest_rate = ((total_amount_of_payments/loan-1)/(months/12))
+        print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
+
+        self.screen.ids.table_list.clear_widgets()
+        self.screen.ids.table_list.add_widget(
+            ItemTable(
+                color=(0.2, 0.2, 0.2, 0.5),
+                num="№",
+                date="Date",
+                payment="Payment",
+                interest="Interest",
+                principal="Principal",
+                debt="Debt",
+            )
+        )
+
+        debt_end_month = loan
+        for i in range(0, months):
+            row_color = (1, 1, 1, 1)
+            if (i%2 != 0):
+                row_color = (0.2, 0.2, 0.2, 0.2)
+            repayment_of_interest = debt_end_month * percent
+            repayment_of_loan_body = monthly_payment - repayment_of_interest
+            debt_end_month = debt_end_month - repayment_of_loan_body
+
+            self.screen.ids.table_list.add_widget(
+                ItemTable(
+                    color=row_color, #(0, 0, 0, 1),
+                    num=str(i+1),
+                    date=start_date.strftime("%d-%m-%Y"),
+                    payment=str(round(monthly_payment, 2)),
+                    interest=str(round(repayment_of_interest, 2)),
+                    principal=str(round(repayment_of_loan_body, 2)),
+                    debt=str(round(debt_end_month, 2)),
+                )
+            )
+
+            start_date = next_month_date(start_date)
+
         pass
 
 P2PLoansConstructorApp().run()
