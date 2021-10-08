@@ -233,6 +233,7 @@ Screen:
                                         size: self.size
                                         pos: self.pos
                                
+                               
                             BoxLayout:
                                 orientation: 'horizontal'
                                 padding: "10dp"
