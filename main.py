@@ -3,6 +3,9 @@
 #pip install https://github.com/kivymd/KivyMD/archive/3274d62.zip
 from calendar import calendar
 
+from kivy.graphics import Color, Rectangle, Line, Ellipse
+from random import random as r
+
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ListProperty
@@ -182,7 +185,7 @@ Screen:
                         Tab:
                             id: tab2
                             name: 'tab2'
-                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] Portfolio composition"
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-bar-stacked']}[/size][/font] Payments forecast"
                             
                             BoxLayout:
                                 orientation: 'vertical'
@@ -196,12 +199,138 @@ Screen:
                         Tab:
                             id: tab3
                             name: 'tab3'
-                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-bar-stacked']}[/size][/font] Payments forecast"
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] Portfolio composition"
+                            
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+                                size_hint_x: 1
+                                size_hint_y: None
+                                height: 50
+                                
+                                canvas: 
+                                    Color: 
+                                        rgba: 0.2, 0.2, 0.2, 0.1
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                        
+                                MDLabel:
+                                    text: "Payment"
+                                    halign: "center"
+                                    font_style: "H5"
+                                    height: "48dp"
+                            
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+                                id: graph
+                                
+                                canvas:
+                                    Color:
+                                        rgba: 1, 1, 1, 1
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                               
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                padding: "10dp"
+                                size_hint_x: 1
+                                size_hint_y: None
+                                height: 50
+                                
+                                MDIcon:
+                                    icon: "checkbox-blank"
+                                    halign: "right"
+                                    color: 0, 0, 1, 1
+                                
+                                MDLabel: 
+                                    text: "Interest"
+                                    halign: "left"
+                                    font_style: "H6"
+                                    height: "48dp"
+                                    
+                                MDIcon:
+                                    icon: "checkbox-blank"
+                                    halign: "right"
+                                    color: 1, 0, 0, 1
+                                
+                                MDLabel:
+                                    text: "Principal"
+                                    halign: "left"
+                                    font_style: "H6"
+                                    height: "48dp" 
                     
                         Tab:
                             id: tab4
                             name: 'tab4'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-box-plus-outline']}[/size][/font] Duration"
+                    
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+                                                            
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+                                    
+                                    canvas:
+                                        Color:
+                                            rgba: 0.2, 0.2, 0.2, 0.1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+                                     
+                                    MDLabel:
+                                        text: "Total payments"
+                                        halign: "center"
+                                        font_style: "H5"
+                                        height: "48dp"   
+                                
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    id: chart
+                                    
+                                    canvas:
+                                        Color:
+                                            rgba: 1, 1, 1, .6
+                                        Rectangle: 
+                                            size: self.size
+                                            pos: self.pos
+                                
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+                                    
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 0, 0, 1, 1
+                                    
+                                    MDLabel:
+                                        text: "Interest"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+                                        
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 1, 0, 0, 1
+                                    
+                                    MDLabel:
+                                        text: "principal"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"  
                     
                         Tab:
                             id: tab5
@@ -292,9 +421,59 @@ class ItemColor(BoxLayout):
     text = StringProperty()
     color = ListProperty()
 
+def show_canvas_stress(wid):
+    with wid.canvas:
+        for x in range(10):
+            Color(r(), 1, 1, mode='hsv')
+            Rectangle(pos=(r() * wid.width + wid.x, r() * wid.height + wid.y), size=(20, 20))
+
+def draw_graph(wid, start_date, loan, months, interest, payment_type):
+    with wid.canvas:
+        Color(.2, .2, .2, 1)
+        Line(rectangle=(wid.x, wid.y, wid.width, wid.height), width=1)
+    graph_height = wid.height
+    delta_width = wid.width / months
+
+    percent = interest / 100 /12
+    monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+
+    debt_end_month = loan
+    for i in range(0, months):
+        repayment_of_interest = debt_end_month * percent
+        repayment_of_loan_body = monthly_payment - repayment_of_interest
+        debt_end_month = debt_end_month - repayment_of_loan_body
+        delta_height_interest = int(repayment_of_interest * graph_height / monthly_payment)
+        delta_height_loan = int(repayment_of_loan_body * graph_height / monthly_payment)
+        # print("####: ", delta_height_loan, delta_height_loan)
+        # print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+        with wid.canvas:
+            Color(1, 0, 0, 1)
+            Rectangle(pos=(wid.x + int(i * delta_width), wid.y), size=(int(delta_width), delta_height_loan))
+            Color(0, 0, 1, 1)
+            Rectangle(pos=(wid.x + int(i * delta_width), wid.y + delta_height_loan), size=(int(delta_width), delta_height_interest))
+
+def draw_chart(wid, total_amount_of_payments, loan):
+    interest_chart = ((total_amount_of_payments - loan) * 360) / total_amount_of_payments
+    circle_width = wid.width
+    center_x = 0
+    center_y = wid.height // 2 - circle_width // 2
+    if (wid.width > wid.height):
+        circle_width = wid.height
+        center_x = wid.width // 2 - circle_width // 2
+        center_y = 0
+    # print(wid.x, wid.y)
+    with wid.canvas:
+        Color(0, 0, 1, 1)
+        Ellipse(pos=(wid.x + center_x, wid.y + center_y), size=(circle_width, circle_width),
+                angle_start=360 - int(interest_chart), angle_end=360)
+        Color(1, 0, 0, 1)
+        Ellipse(pos=(wid.x + center_x, wid.y + center_y), size=(circle_width, circle_width), angle_start=0,
+                angle_end=360 - int(interest_chart))
+
 class P2PLoansConstructorApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
         self.screen = Builder.load_string(KV)
         # https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropItem#center-position
         # menu_items = [{"icon": "git", "text": f"Item (i)"} for i in range(5)]
@@ -350,8 +529,8 @@ class P2PLoansConstructorApp(MDApp):
         icons_item_menu_tabs = {
             "calculator-variant": "Input",
             "table-large": "Table",
-            "chart-areaspline": "Payments",
-            "chart-pie": "Portfolio composition",
+            "chart-areaspline": "Portfolio composition",
+            "chart-pie": "Payments",
             "book-open-variant": "Summary"
         }
         for icon_name in icons_item_menu_lines.keys():
@@ -446,6 +625,15 @@ class P2PLoansConstructorApp(MDApp):
             )
 
             start_date = next_month_date(start_date)
+
+        #show_canvas_stress(self.screen.ids.graph)
+        show_canvas_stress(self.screen.ids.chart)
+
+        self.screen.ids.graph.canvas.clear()
+        draw_graph(self.screen.ids.graph, start_date, loan, months, interest, payment_type)
+
+        self.screen.ids.chart.canvas.clear()
+        draw_chart(self.screen.ids.chart, total_amount_of_payments, loan)
 
         pass
 
