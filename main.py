@@ -179,6 +179,7 @@ Screen:
                                             line_color: 0, 0, 0, 1
                                             icon_color: 1, 0, 0, 1
                                             md_bg_color: 0, 0, 0, 1
+                                            on_release: app.share_it(*args)
 
                                     AnchorLayout:
                                         anchor_x: 'center'
@@ -187,6 +188,55 @@ Screen:
                                             text: "Test Ok"
                                             size_hint_y: .5
                                             background_color: (0.1, 0.1, 0.1, 1.0)
+                                            
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    
+                                    MDLabel:
+                                        text: "Payment"
+                                        
+                                    MDTextField:
+                                        id: payment_label
+                                        hint_text: ""
+                                        disabled: True
+                                BoxLayout:
+                                    orientation: "horizontal"
+                                    padding: "10dp"
+                                    
+                                    MDLabel:
+                                        text: "Total interest"
+                                        
+                                    MDTextField:
+                                        id: overpayment_loan_label
+                                        hint_text: ""
+                                        disabled: True
+                                        
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    
+                                    MDLabel:
+                                        text: "Total payments"
+                                        
+                                    MDTextField:
+                                        id: total_amount_of_payments_label
+                                        hint_text: ""
+                                        disabled: True
+                                        
+                                BoxLayout:
+                                    orientation: "horizontal"
+                                    padding: "10dp"
+                                    
+                                    MDLabel:
+                                        text: "Effective %"
+                                        
+                                    MDTextField:
+                                        id: effective_interest_rate_label
+                                        hint_text: ""
+                                        disabled: True
+                                        text_hint_color:[0, 0, 1, 1]
+                                        
                         Tab:
                             id: tab2
                             name: 'tab2'
@@ -465,6 +515,11 @@ def draw_chart(wid, total_amount_of_payments, loan):
                 angle_end=360 - int(interest_chart))
 
 
+def share(title, text):
+    from kivy import platform
+
+    print(platform)
+
 class P2PLoansConstructorApp(MDApp):
     dialog = None
 
@@ -518,6 +573,23 @@ class P2PLoansConstructorApp(MDApp):
         self.screen.ids.months.text = "12"
         self.screen.ids.interest.text = "12"
         self.screen.ids.payment_type.text = "annuity"
+
+        loan = self.screen.ids.loan.text
+        months = self.screen.ids.months.text
+        interest = self.screen.ids.interest.text
+        loan = float(loan)
+        months = int(months)
+        interest = float(interest)
+        percent = interest / 100 / 12
+        monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+        total_amount_of_payments = monthly_payment * months
+        overpayment_loan = total_amount_of_payments - loan
+        effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+
+        self.screen.ids.payment_label.text = str(round(monthly_payment, 2))
+        self.screen.ids.total_amount_of_payments_label.text = str(round(total_amount_of_payments, 2))
+        self.screen.ids.overpayment_loan_label.text = str(round(overpayment_loan, 2))
+        self.screen.ids.effective_interest_rate_label.text = str(round(effective_interest_rate, 2))
 
         icons_item_menu_lines = {
             "account-cog-outline": "My Account",
@@ -641,6 +713,9 @@ class P2PLoansConstructorApp(MDApp):
                 ],
             )
         self.dialog.open()
+
+    def share_it(self, *args):
+        share("title_share", "this content to share!")
 
 P2PLoansConstructorApp().run()
 
