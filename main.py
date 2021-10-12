@@ -1,10 +1,16 @@
-#pip install kivy
-#pip install kivymd
-#pip install https://github.com/kivymd/KivyMD/archive/3274d62.zip
+# pip install kivy
+# pip install kivymd
+# pip install https://github.com/kivymd/KivyMD/archive/3274d62.zip
 from calendar import calendar
 
 from kivy.graphics import Color, Rectangle, Line, Ellipse
 from random import random as r
+
+from kivymd.uix.datatables import MDDataTable
+from kivy.metrics import dp
+
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
@@ -31,7 +37,6 @@ KV = '''
 # this import will prevent disappear tabs through some clicks  
 #:import md_icons kivymd.icon_definitions.md_icons
 #:import fonts kivymd.font_definitions.fonts
-
 # Menu item in the DrawerList list.
 <ItemDrawer>:
     theme_text_color: "Custom"
@@ -85,87 +90,87 @@ Screen:
                         height: "48dp"
                         tab_indicator_anim: False
                         background_color: 0.1, 0.1, 0.1, 1 
-                    
+
                         Tab:
                             id: tab1
                             name: 'tab1'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['calculator-variant']}[/size][/font] Input"
-                    
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
-                                
+
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                  
+
                                     MDIconButton:
                                         icon: "calendar-month"
-                                      
+
                                     MDTextField:
                                         id: start_date
                                         hint_text: "Start date"
                                         on_focus: if self.focus: app.date_dialog.open()
-                                    
+                                        color_mode: 'custom'
+                                        line_color_focus: 0, 0, 0, 1
+                                        text_color: 0, 0, 0, 1
+                                        current_hint_text_color: 0, 0, 0, 1
+                                        text_hint_color: 0, 0, 1, 1
+
                                     MDTextField:
                                         hint_text: "Start date"
-                                      
+
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                  
+
                                     MDIconButton:
                                         icon: "cash"
-                                      
+
                                     MDTextField:
                                         id: loan
                                         hint_text: "Loan"
-                                      
+
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                  
+
                                     MDIconButton: 
                                         icon: "clock-time-five-outline"
-                                      
+
                                     MDTextField:
                                         id: months
                                         hint_text: "Months"
-                                      
+
                                 BoxLayout:
                                     orientation: "horizontal"
-                                  
+
                                     MDIconButton:
                                         icon: "bank"   
-                                      
+
                                     MDTextField:
                                         id: interest
                                         hint_text: "Interest rate, %"
-                                      
+
                                     MDTextField:
                                         id: payment_type
                                         hint_text: "Payment type"
                                         on_focus: if self.focus: app.menu.open()
                                 MDSeparator:
                                     height: "1dp"
-                                    
+
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    
+
                                     AnchorLayout:
                                         anchor_x: 'center'
-                                        
+
                                         MDRectangleFlatIconButton:
                                             icon: "android"
                                             text: "BUTTON1"
-                                            theme_text_color: "Custom"
-                                            text_color: 1, 1, 1, 1
-                                            line_color: 0, 0, 0, 1
-                                            icon_color: 1, 0, 0, 1
-                                            md_bg_color: 0.1, 0.1, 0.1, 1
                                             adaptive_width: True
                                             on_release: app.calc_table(*args)
-                                    
+
                                     AnchorLayout:
                                         anchor_x: 'center'
-                                        
+
                                         MDRectangleFlatIconButton:
                                             icon: "android"
                                             text: "BUTTON2"
@@ -173,11 +178,11 @@ Screen:
                                             text_color: 1, 1, 1, 1
                                             line_color: 0, 0, 0, 1
                                             icon_color: 1, 0, 0, 1
-                                            md_bg_color: 0.1, 0.1, 0.1, 1
-                                    
+                                            md_bg_color: 0, 0, 0, 1
+
                                     AnchorLayout:
                                         anchor_x: 'center'
-                                        
+
                                         Button:
                                             text: "Test Ok"
                                             size_hint_y: .5
@@ -185,218 +190,201 @@ Screen:
                         Tab:
                             id: tab2
                             name: 'tab2'
-                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-bar-stacked']}[/size][/font] Payments forecast"
-                            
-                            BoxLayout:
-                                orientation: 'vertical'
-                                padding: "10dp"   
-                                
-                                ScrollView:
-                                
-                                    MDList:
-                                        id: table_list
-                              
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-bar-stacked']}[/size][/font] Payments forecast"   
+
+                            ScrollView:
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    id: calc_data_table
+                                    
+                            MDFloatingActionButton:
+                                icon: "email-outline"
+                                pos: 20, 20 
+                                on_release: app.show_confirmation_dialog()
+
+
                         Tab:
                             id: tab3
                             name: 'tab3'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] Portfolio composition"
-                            
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
-                                size_hint_x: 1
-                                size_hint_y: None
-                                height: 50
                                 
-                                canvas: 
-                                    Color: 
-                                        rgba: 0.2, 0.2, 0.2, 0.1
-                                    Rectangle:
-                                        size: self.size
-                                        pos: self.pos
-                                        
-                                MDLabel:
-                                    text: "Payment"
-                                    halign: "center"
-                                    font_style: "H5"
-                                    height: "48dp"
-                            
+                                
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+
+                                    canvas: 
+                                        Color: 
+                                            rgba: 0.2, 0.2, 0.2, 0.1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+
+                                    MDLabel:
+                                        text: "Payment"
+                                        halign: "center"
+                                        font_style: "H5"
+                                        height: "48dp"
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
                                 id: graph
-                                
+
                                 canvas:
                                     Color:
                                         rgba: 1, 1, 1, 1
                                     Rectangle:
                                         size: self.size
                                         pos: self.pos
-                               
-                               
+
+
                             BoxLayout:
                                 orientation: 'horizontal'
                                 padding: "10dp"
                                 size_hint_x: 1
                                 size_hint_y: None
                                 height: 50
-                                
+
                                 MDIcon:
                                     icon: "checkbox-blank"
                                     halign: "right"
                                     color: 0, 0, 1, 1
-                                
+
                                 MDLabel: 
                                     text: "Interest"
                                     halign: "left"
                                     font_style: "H6"
                                     height: "48dp"
-                                    
+
                                 MDIcon:
                                     icon: "checkbox-blank"
                                     halign: "right"
                                     color: 1, 0, 0, 1
-                                
+
                                 MDLabel:
                                     text: "Principal"
                                     halign: "left"
                                     font_style: "H6"
                                     height: "48dp" 
-                    
+
                         Tab:
                             id: tab4
                             name: 'tab4'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-box-plus-outline']}[/size][/font] Duration"
-                    
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
-                                                            
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     padding: "10dp"
                                     size_hint_x: 1
                                     size_hint_y: None
                                     height: 50
-                                    
+
                                     canvas:
                                         Color:
                                             rgba: 0.2, 0.2, 0.2, 0.1
                                         Rectangle:
                                             size: self.size
                                             pos: self.pos
-                                     
+
                                     MDLabel:
                                         text: "Total payments"
                                         halign: "center"
                                         font_style: "H5"
                                         height: "48dp"   
-                                
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     padding: "10dp"
                                     id: chart
-                                    
+
                                     canvas:
                                         Color:
                                             rgba: 1, 1, 1, .6
                                         Rectangle: 
                                             size: self.size
                                             pos: self.pos
-                                
+
                                 BoxLayout:
                                     orientation: 'horizontal'
                                     padding: "10dp"
                                     size_hint_x: 1
                                     size_hint_y: None
                                     height: 50
-                                    
+
                                     MDIcon:
                                         icon: "checkbox-blank"
                                         halign: "right"
                                         color: 0, 0, 1, 1
-                                    
+
                                     MDLabel:
                                         text: "Interest"
                                         halign: "left"
                                         font_style: "H6"
                                         height: "48dp"
-                                        
+
                                     MDIcon:
                                         icon: "checkbox-blank"
                                         halign: "right"
                                         color: 1, 0, 0, 1
-                                    
+
                                     MDLabel:
                                         text: "principal"
                                         halign: "left"
                                         font_style: "H6"
                                         height: "48dp"  
-                    
+
                         Tab:
                             id: tab5
                             name: 'tab5'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['checkbox-marked-outline']}[/size][/font] Summary"
-                    
+
         MDNavigationDrawer:
             id: nav_drawer
             ContentNavigationDrawer:
                 id: content_drawer
-
-<ItemTable>:
+                
+<ContentDialogSend>
+    orientation: 'vertical'
+    spacing: "12dp"
     size_hint_y: None
-    height: "42dp"
+    height: "120dp"
     
-    canvas:
-        Color:
-            rgba: root.color
-        Rectangle:
-            size: self.size
-            pos: self.pos
-            
-    MDLabel:
-        text: root.num
-        halign: "center"
-    MDLabel:
-        text: root.date
-        halign: "center"
-    MDLabel:
-        text: root.payment
-        halign: "center"
-    MDLabel:
-        text: root.interest
-        halign: "center"
-    MDLabel:
-        text: root.principal
-        halign: "center"
-    MDLabel:
-        text: root.debt
-        halign: "center"
+    MDTextField:
+        hint_text: "Email"
         
+    MDTextField:
+        hint_text: "Message"
 '''
 
 
 class Tab(MDFloatLayout, MDTabsBase):
-    pass
+    '''Class implementing content for a tab'''
 
-class ItemTable(BoxLayout):
-    num = StringProperty()
-    date = StringProperty()
-    payment = StringProperty()
-    interest = StringProperty()
-    principal = StringProperty()
-    debt = StringProperty()
-    color = ListProperty()
+class ContentDialogSend(BoxLayout):
+    pass
 
 def next_month_date(d):
     _year = d.year + (d.month // 12)
     _month = 1 if (d.month // 12) else d.month + 1
-    next_month_len = calendar.monthrange(_year, _month) [1]
+    next_month_len = calendar.monthrange(_year, _month)[1]
     next_month = d
     if d.day > next_month_len:
         next_month = next_month.replace(day=next_month_len)
     next_month = next_month.replace(year=_year, month=_month)
     return next_month
+
 
 class ContentNavigationDrawer(BoxLayout):
     pass
@@ -418,15 +406,18 @@ class DrawerList(ThemableBehavior, MDList):
                 break
         instance_item.text_color = self.theme_cls.primary_color
 
+
 class ItemColor(BoxLayout):
     text = StringProperty()
     color = ListProperty()
+
 
 def show_canvas_stress(wid):
     with wid.canvas:
         for x in range(10):
             Color(r(), 1, 1, mode='hsv')
             Rectangle(pos=(r() * wid.width + wid.x, r() * wid.height + wid.y), size=(20, 20))
+
 
 def draw_graph(wid, start_date, loan, months, interest, payment_type):
     with wid.canvas:
@@ -435,7 +426,7 @@ def draw_graph(wid, start_date, loan, months, interest, payment_type):
     graph_height = wid.height
     delta_width = wid.width / months
 
-    percent = interest / 100 /12
+    percent = interest / 100 / 12
     monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
 
     debt_end_month = loan
@@ -451,7 +442,9 @@ def draw_graph(wid, start_date, loan, months, interest, payment_type):
             Color(1, 0, 0, 1)
             Rectangle(pos=(wid.x + int(i * delta_width), wid.y), size=(int(delta_width), delta_height_loan))
             Color(0, 0, 1, 1)
-            Rectangle(pos=(wid.x + int(i * delta_width), wid.y + delta_height_loan), size=(int(delta_width), delta_height_interest))
+            Rectangle(pos=(wid.x + int(i * delta_width), wid.y + delta_height_loan),
+                      size=(int(delta_width), delta_height_interest))
+
 
 def draw_chart(wid, total_amount_of_payments, loan):
     interest_chart = ((total_amount_of_payments - loan) * 360) / total_amount_of_payments
@@ -471,9 +464,16 @@ def draw_chart(wid, total_amount_of_payments, loan):
         Ellipse(pos=(wid.x + center_x, wid.y + center_y), size=(circle_width, circle_width), angle_start=0,
                 angle_end=360 - int(interest_chart))
 
+
 class P2PLoansConstructorApp(MDApp):
+    dialog = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.theme_cls.primary_palette = "Brown"
+        self.theme_cls.primary_hue = "A100"
+        self.data_for_calc_is_changed = True
 
         self.screen = Builder.load_string(KV)
         # https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropItem#center-position
@@ -505,10 +505,10 @@ class P2PLoansConstructorApp(MDApp):
         :type date: <class 'datetime.date'>
         '''
         print(date)
-        self.screen.ids.start_date.text = date.strftime("%d-%m-%Y") # str(date)
+        self.screen.ids.start_date.text = date.strftime("%d-%m-%Y")  # str(date)
 
     def build(self):
-        self.theme_cls.theme_style = "Light" # "Dark" # "Light"
+        self.theme_cls.theme_style = "Light"  # "Dark" # "Light"
         # return Builder.load_string(KV)
         return self.screen
 
@@ -548,17 +548,19 @@ class P2PLoansConstructorApp(MDApp):
         #   )
 
     def on_tab_switch(
-        self, instance_tabs, instance_tab, instance_tab_label, tab_text
-    ):
+            self, *args):
         '''Called when switching tabs.
+                :type instance_tabs: <kivymd.uix.tab.MDTabs object>;
+                :param instance_tab: <__main__.Tab object>;
+                :param instance_tab_label: <kivymd.uix.tab.MDTabsLabel object>;
+                :param tab_text: text or name icon of tab;
+                '''
 
-        :type instance_tabs: <kivymd.uix.tab.MDTabs object>;
-        :param instance_tab: <__main__.Tab object>;
-        :param instance_tab_label: <kivymd.uix.tab.MDTabsLabel object>;
-        :param tab_text: text or name icon of tab;
-        '''
-
-        print("tab clicked! "+tab_text)
+        #print("tab clicked! " + tab_text)
+        if self.data_for_calc_is_changed:
+            self.calc_table(self, args)
+            self.data_for_calc_is_changed = False
+        pass
 
     def on_star_click(self):
         pass
@@ -570,64 +572,33 @@ class P2PLoansConstructorApp(MDApp):
         months = self.screen.ids.months.text
         interest = self.screen.ids.interest.text
         payment_type = self.screen.ids.payment_type.text
-        print(start_date+" "+loan+" "+months+" "+payment_type)
-        start_date = datetime.datetime.strptime(self.screen.ids.start_date.text,"%d-%m-%Y").date()
+        print(start_date + " " + loan + " " + months + " " + payment_type)
+        start_date = datetime.datetime.strptime(self.screen.ids.start_date.text, "%d-%m-%Y").date()
         loan = float(loan)
         months = int(months)
         interest = float(interest)
 
-        percent = interest/100/12
-        monthly_payment = loan*(percent+percent/((1+percent)**months-1))
+        row_data_for_tab = []
+        percent = interest / 100 / 12
+        monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
 
         debt_end_month = loan
         for i in range(0, months):
-            repayment_of_interest = debt_end_month*percent
-            repayment_of_loan_body = monthly_payment-repayment_of_interest
-            debt_end_month = debt_end_month-repayment_of_loan_body
-            print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
-
-        total_amount_of_payments = monthly_payment * months
-        overpayment_loan = total_amount_of_payments-loan
-        effective_interest_rate = ((total_amount_of_payments/loan-1)/(months/12))
-        print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
-
-        self.screen.ids.table_list.clear_widgets()
-        self.screen.ids.table_list.add_widget(
-            ItemTable(
-                color=(0.2, 0.2, 0.2, 0.5),
-                num="№",
-                date="Date",
-                payment="Payment",
-                interest="Interest",
-                principal="Principal",
-                debt="Debt",
-            )
-        )
-
-        debt_end_month = loan
-        for i in range(0, months):
-            row_color = (1, 1, 1, 1)
-            if (i%2 != 0):
-                row_color = (0.2, 0.2, 0.2, 0.2)
             repayment_of_interest = debt_end_month * percent
             repayment_of_loan_body = monthly_payment - repayment_of_interest
             debt_end_month = debt_end_month - repayment_of_loan_body
+            print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+            row_data_for_tab.append(
+                [i + 1, start_date.strftime("%d-%m-%Y"), round(monthly_payment, 2), round(repayment_of_interest, 2),
+                 round(repayment_of_loan_body, 2), round(debt_end_month, 2)])
+        total_amount_of_payments = monthly_payment * months
+        overpayment_loan = total_amount_of_payments - loan
+        effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12))
+        #print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
 
-            self.screen.ids.table_list.add_widget(
-                ItemTable(
-                    color=row_color, #(0, 0, 0, 1),
-                    num=str(i+1),
-                    date=start_date.strftime("%d-%m-%Y"),
-                    payment=str(round(monthly_payment, 2)),
-                    interest=str(round(repayment_of_interest, 2)),
-                    principal=str(round(repayment_of_loan_body, 2)),
-                    debt=str(round(debt_end_month, 2)),
-                )
-            )
+        start_date = next_month_date(start_date)
 
-            start_date = next_month_date(start_date)
-
-        #show_canvas_stress(self.screen.ids.graph)
+        # show_canvas_stress(self.screen.ids.graph)
         show_canvas_stress(self.screen.ids.chart)
 
         self.screen.ids.graph.canvas.clear()
@@ -636,7 +607,40 @@ class P2PLoansConstructorApp(MDApp):
         self.screen.ids.chart.canvas.clear()
         draw_chart(self.screen.ids.chart, total_amount_of_payments, loan)
 
+        data_tables = MDDataTable(
+            use_pagination=True,
+            rows_num=10,
+            column_data=[
+                ("B,,-", dp(10)),
+                ("Date", dp(20)),
+                ("Payment", dp(20)),
+                ("Interest", dp(20)),
+                ("Principal", dp(20)),
+                ("Debt", dp(20)),
+            ],
+            row_data=row_data_for_tab,
+        )
+        self.screen.ids.calc_data_table.clear_widgets()
+        self.screen.ids.calc_data_table.add_widget(data_tables)
+
         pass
+
+    def show_confirmation_dialog(self):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title="Share it:",
+                type="custom",
+                content_cls=ContentDialogSend(),
+                buttons=[
+                    MDFlatButton(
+                        text="Cancel", text_color=self.theme_cls.primary_color
+                    ),
+                    MDFlatButton(
+                        text="SEND", text_color=self.theme_cls.primary_color
+                    ),
+                ],
+            )
+        self.dialog.open()
 
 P2PLoansConstructorApp().run()
 
