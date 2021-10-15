@@ -32,6 +32,11 @@ from kivymd.uix.picker import MDDatePicker
 import datetime
 import calendar
 
+from kivy.uix.textinput import TextInput
+
+import locale
+print(locale.getdefaultlocale())
+
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
 # this import will prevent disappear tabs through some clicks  
@@ -127,7 +132,14 @@ Screen:
 
                                     MDTextField:
                                         id: loan
+                                        name: 'Loan'
                                         hint_text: "Loan"
+                                        color_mode: 'custom'
+                                        line_color_focus: 0, 0, 0, 1
+                                        text_color: 0, 0, 0, 1
+                                        current_hint_text_color: 0, 0, 0, 1
+                                        input_filter: 'float'
+                                        helper_text_mode: "on_focus"
 
                                 BoxLayout:
                                     orientation: 'horizontal'
@@ -137,7 +149,14 @@ Screen:
 
                                     MDTextField:
                                         id: months
+                                        name: 'months'
                                         hint_text: "Months"
+                                        color_mode: 'custom'
+                                        line_color_focus: 0, 0, 0, 1
+                                        text_color: 0, 0, 0, 1
+                                        current_hint_text_color: 0, 0, 0, 1
+                                        input_filter: 'int'
+                                        helper_text_mode: "on_focus"
 
                                 BoxLayout:
                                     orientation: "horizontal"
@@ -147,48 +166,25 @@ Screen:
 
                                     MDTextField:
                                         id: interest
+                                        name: 'interest'
                                         hint_text: "Interest rate, %"
+                                        color_mode: 'custom'
+                                        line_color_focus: 0, 0, 0, 1
+                                        text_color: 0, 0, 0, 1
+                                        current_hint_text_color: 0, 0, 0, 1
+                                        input_filter: 'float'
+                                        helper_text_mode: "on_focus"
 
                                     MDTextField:
                                         id: payment_type
+                                        name: 'payment_type'
                                         hint_text: "Payment type"
                                         on_focus: if self.focus: app.menu.open()
-                                MDSeparator:
-                                    height: "1dp"
-
-                                BoxLayout:
-                                    orientation: 'horizontal'
-
-                                    AnchorLayout:
-                                        anchor_x: 'center'
-
-                                        MDRectangleFlatIconButton:
-                                            icon: "android"
-                                            text: "BUTTON1"
-                                            adaptive_width: True
-                                            on_release: app.calc_table(*args)
-
-                                    AnchorLayout:
-                                        anchor_x: 'center'
-
-                                        MDRectangleFlatIconButton:
-                                            icon: "android"
-                                            text: "BUTTON2"
-                                            theme_text_color: "Custom"
-                                            text_color: 1, 1, 1, 1
-                                            line_color: 0, 0, 0, 1
-                                            icon_color: 1, 0, 0, 1
-                                            md_bg_color: 0, 0, 0, 1
-                                            on_release: app.share_it(*args)
-
-                                    AnchorLayout:
-                                        anchor_x: 'center'
-
-                                        Button:
-                                            text: "Test Ok"
-                                            size_hint_y: .5
-                                            background_color: (0.1, 0.1, 0.1, 1.0)
-                                            
+                                        color_mode: 'custom'
+                                        line_color_focus: 0, 0, 0, 1
+                                        text_color: 0, 0, 0, 1
+                                        current_hint_text_color: 0, 0, 0, 1
+                                
                                 BoxLayout:
                                     orientation: 'horizontal'
                                     padding: "10dp"
@@ -283,47 +279,47 @@ Screen:
                                         font_style: "H5"
                                         height: "48dp"
 
-                            BoxLayout:
-                                orientation: 'vertical'
-                                padding: "10dp"
-                                id: graph
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    id: graph
 
-                                canvas:
-                                    Color:
-                                        rgba: 1, 1, 1, 1
-                                    Rectangle:
-                                        size: self.size
-                                        pos: self.pos
+                                    canvas:
+                                        Color:
+                                            rgba: 1, 1, 1, 1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
 
 
-                            BoxLayout:
-                                orientation: 'horizontal'
-                                padding: "10dp"
-                                size_hint_x: 1
-                                size_hint_y: None
-                                height: 50
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
 
-                                MDIcon:
-                                    icon: "checkbox-blank"
-                                    halign: "right"
-                                    color: 0, 0, 1, 1
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 0, 0, 1, 1
 
-                                MDLabel: 
-                                    text: "Interest"
-                                    halign: "left"
-                                    font_style: "H6"
-                                    height: "48dp"
+                                    MDLabel: 
+                                        text: "Interest"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
 
-                                MDIcon:
-                                    icon: "checkbox-blank"
-                                    halign: "right"
-                                    color: 1, 0, 0, 1
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 1, 0, 0, 1
 
-                                MDLabel:
-                                    text: "Principal"
-                                    halign: "left"
-                                    font_style: "H6"
-                                    height: "48dp" 
+                                    MDLabel:
+                                        text: "Principal"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp" 
 
                         Tab:
                             id: tab4
@@ -399,7 +395,126 @@ Screen:
                             id: tab5
                             name: 'tab5'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['checkbox-marked-outline']}[/size][/font] Summary"
-
+                            
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+                            
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+                                
+                                    MDLabel: 
+                                        text: "Collateral"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel: 
+                                        id: sum_property_value_label
+                                        halign: "left"
+                                    
+                                    MDLabel:
+                                        text: "Payment"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_payment_label
+                                        halign: "left"
+                            
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+                                
+                                    MDLabel:
+                                        text: "Interest"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_interest_label
+                                        halign: "left"
+                                    
+                                    MDLabel:
+                                        text: "Total interest"
+                                        haligh: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_overpayment_loan_label
+                                        halign: "left"
+                            
+                                BoxLayout: 
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+                                
+                                    MDLabel:
+                                        text: "Start date"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel: 
+                                        id: sum_start_date_label
+                                        halign: "left"
+                                    
+                                    MDLabel:
+                                        text: "Payments type"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_payments_type_label
+                                        halign: "left"
+                            
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+                                
+                                    MDLabel:
+                                        text: "End date"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_end_date_label
+                                        halign: "left"
+                                    
+                                    MDLabel: 
+                                        text: "Effective %"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel: 
+                                        id: sum_effective_interest_rate_label
+                                        halign: "left"
+                                    
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+                                
+                                    MDLabel:
+                                        text: "Total payments"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_total_amount_of_payments_label
+                                        halign: "left"
+                                    
+                                    MDLabel:
+                                        text: "Term length"
+                                        halign: "right"
+                                        bold: True
+                                    
+                                    MDLabel:
+                                        id: sum_term_length_label
+                                        halign: "left"
+                            
         MDNavigationDrawer:
             id: nav_drawer
             ContentNavigationDrawer:
@@ -548,6 +663,59 @@ class P2PLoansConstructorApp(MDApp):
             background_color=(0.1, 0.1, 0.1, 1.0),
         )
 
+        self.screen.ids.loan.bind(
+            on_touch_down=self.validate_on_nums_input,
+            focus=self.on_focus,
+        )
+
+        self.screen.ids.months.bind(
+            on_touch_down=self.validate_on_nums_input,
+            focus=self.on_focus,
+        )
+
+        self.screen.ids.interest.bind(
+            on_touch_down=self.validate_on_nums_input,
+            focus=self.on_focus,
+        )
+
+    def on_focus(self, instance, value):
+        if value:
+            print('User focused', instance.name, instance.text)
+            if instance.name == 'loan':
+                self.screen.ids.loan.helper_text = "Please enter only numbers, max 999 999 999"
+            elif instance.name == 'months':
+                self.screen.ids.months.helper_text = "Please enter only numbers, max 1200"
+            elif instance.name == 'interest':
+                self.screen.ids.interest.helper_text = "Please enter only numbers, max 1000"
+        else:
+            print('User defocused', instance.name, instance.text)
+            if instance.name == 'loan':
+                self.screen.ids.loan.helper_text = ""
+                if len(self.screen.ids.loan.text) > 9:
+                    self.screen.ids.loan.text = self.screen.ids.loan.text[0:9]
+                self.calc_1st_screen()
+                self.data_for_calc_is_changed = True
+            elif instance.name == 'months':
+                self.screen.ids.months.helper_text = ""
+                if len(self.screen.ids.months.text) > 4:
+                    self.screen.ids.months.text = self.screen.ids.months.text[0:4]
+                if int(self.screen.ids.months.text) > 1200:
+                    self.screen.ids.months.text = "1200"
+                self.calc_1st_screen()
+                self.data_for_calc_is_changed = True
+            elif instance.name == 'interest':
+                self.screen.ids.interest.helper_text = ""
+                if len(self.screen.ids.interest.text) > 4:
+                    self.screen.ids.interest.text = self.screen.ids.interest.text[0:4]
+                if float(self.screen.ids.interest.text) > 1000:
+                    self.screen.ids.interest.text = "1000"
+                self.calc_1st_screen()
+                self.data_for_calc_is_changed = True
+
+    def validate_on_nums_input(self, instance_textfield, value):
+        print(instance_textfield, value)
+        # self.screen.ids.loan.error = True
+
     def set_item(self, instance_menu, instance_menu_item):
         def set_item(interval):
             self.screen.ids.payment_type.text = instance_menu_item.text
@@ -559,20 +727,26 @@ class P2PLoansConstructorApp(MDApp):
         '''
         :type date: <class 'datetime.date'>
         '''
-        print(date)
+        pre_start_date = datetime.datetime.strptime(self.screen.ids.start_date.text, "%d-%m-%Y").date()
+        print("Before: ", date, self.data_for_calc_is_changed, pre_start_date == date)
         self.screen.ids.start_date.text = date.strftime("%d-%m-%Y")  # str(date)
+        if (pre_start_date != date):
+            self.data_for_calc_is_changed = True
+        print("After: ", date, self.data_for_calc_is_changed, pre_start_date == date)
 
     def build(self):
         self.theme_cls.theme_style = "Light"  # "Dark" # "Light"
         # return Builder.load_string(KV)
         return self.screen
 
-    def on_start(self):
-        self.screen.ids.start_date.text = datetime.date.today().strftime("%d-%m-%Y")
-        self.screen.ids.loan.text = "1000"
-        self.screen.ids.months.text = "12"
-        self.screen.ids.interest.text = "12"
-        self.screen.ids.payment_type.text = "annuity"
+    def calc_1st_screen(self):
+        loan = self.screen.ids.loan.text
+        months = self.screen.ids.months.text
+        interest = self.screen.ids.interest.text
+        loan = float(loan)
+        months = int(months)
+        interest = float(interest)
+        percent = interest / 100 / 12
 
         loan = self.screen.ids.loan.text
         months = self.screen.ids.months.text
@@ -591,6 +765,14 @@ class P2PLoansConstructorApp(MDApp):
         self.screen.ids.overpayment_loan_label.text = str(round(overpayment_loan, 2))
         self.screen.ids.effective_interest_rate_label.text = str(round(effective_interest_rate, 2))
 
+    def on_start(self):
+        self.screen.ids.start_date.text = datetime.date.today().strftime("%d-%m-%Y")
+        self.screen.ids.loan.text = "50000"
+        self.screen.ids.months.text = "12"
+        self.screen.ids.interest.text = "12"
+        # self.screen.ids.payment_type.text = "annuity"
+
+        self.calc_1st_screen()
         icons_item_menu_lines = {
             "account-cog-outline": "My Account",
             "hand-okay": "My Grade",
@@ -618,6 +800,8 @@ class P2PLoansConstructorApp(MDApp):
         #           text=f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons[icon_name]}[/font][/ref] {name_tab}"
         #       )
         #   )
+
+        pass
 
     def on_tab_switch(
             self, *args):
@@ -654,6 +838,9 @@ class P2PLoansConstructorApp(MDApp):
         percent = interest / 100 / 12
         monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
 
+        next_date = start_date
+        next_prev_date = next_date
+
         debt_end_month = loan
         for i in range(0, months):
             repayment_of_interest = debt_end_month * percent
@@ -661,14 +848,14 @@ class P2PLoansConstructorApp(MDApp):
             debt_end_month = debt_end_month - repayment_of_loan_body
             print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
             row_data_for_tab.append(
-                [i + 1, start_date.strftime("%d-%m-%Y"), round(monthly_payment, 2), round(repayment_of_interest, 2),
+                [i + 1, next_date.strftime("%d-%m-%Y"), round(monthly_payment, 2), round(repayment_of_interest, 2),
                  round(repayment_of_loan_body, 2), round(debt_end_month, 2)])
+            next_prev_date = next_date
+            next_date = next_month_date(next_date)
         total_amount_of_payments = monthly_payment * months
         overpayment_loan = total_amount_of_payments - loan
         effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12))
         #print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
-
-        start_date = next_month_date(start_date)
 
         # show_canvas_stress(self.screen.ids.graph)
         show_canvas_stress(self.screen.ids.chart)
@@ -694,6 +881,19 @@ class P2PLoansConstructorApp(MDApp):
         )
         self.screen.ids.calc_data_table.clear_widgets()
         self.screen.ids.calc_data_table.add_widget(data_tables)
+
+        self.screen.ids.sum_total_amount_of_payments_label.text = str(round(total_amount_of_payments, 2))
+        self.screen.ids.sum_overpayment_loan_label.text = str(round(overpayment_loan, 2))
+        self.screen.ids.sum_effective_interest_rate_label.text = str(round(effective_interest_rate, 2))
+
+        self.screen.ids.sum_term_length_label.text = str(round(months, 2)) + " months"
+        self.screen.ids.sum_interest_label.text = str(round(interest, 2)) + " %"
+        self.screen.ids.sum_property_value_label.text = str(round(loan, 2))
+
+        self.screen.ids.sum_start_date_label.text = start_date.strftime("%d-%m-%Y")
+        self.screen.ids.sum_end_date_label.text = next_prev_date.strftime("%d-%m-%Y")
+
+        self.screen.ids.sum_payments_type_label.text = payment_type
 
         pass
 
